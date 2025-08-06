@@ -86,7 +86,6 @@ app.get('/health', async (req, res) => {
     res.status(jenkinsHealthy ? 200 : 503).json({
       status: jenkinsHealthy ? 'healthy' : 'unhealthy',
       relay: {
-        targetUrl: config.targetJenkinsUrl,
         webhookPath: config.webhookPath,
         jenkins: jenkinsHealthy ? 'reachable' : 'unreachable'
       },
