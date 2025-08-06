@@ -3,10 +3,9 @@ import express from 'express'
 import path from 'path'
 
 import { config } from '../config'
-import { WebhookRelay } from './webhookRelay'
+import { healthCheck, relayWebhook } from './webhookRelay'
 
 const app = express()
-const webhookRelay = new WebhookRelay()
 
 // Enable CORS
 app.use(cors())
@@ -46,11 +45,7 @@ app.post(
       )
 
       // Relay the webhook to Jenkins
-      const result = await webhookRelay.relayWebhook(
-        payload,
-        headers,
-        rawPayload
-      )
+      const result = await relayWebhook(payload, headers, rawPayload)
 
       if (result.success) {
         console.log(
@@ -86,7 +81,7 @@ app.use(express.json({ limit: '10mb' }))
 // Health check endpoint
 app.get('/health', async (req, res) => {
   try {
-    const jenkinsHealthy = await webhookRelay.healthCheck()
+    const jenkinsHealthy = await healthCheck()
 
     res.status(jenkinsHealthy ? 200 : 503).json({
       status: jenkinsHealthy ? 'healthy' : 'unhealthy',
